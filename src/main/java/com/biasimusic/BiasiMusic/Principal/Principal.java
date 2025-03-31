@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 @Service
 public class Principal {
@@ -21,6 +22,7 @@ public class Principal {
     private final MusicasRepository musicasRepository;
     private List<Artistas> artistasList = new ArrayList<>();
     private List <Musicas> musicasList = new ArrayList<>();
+    private Artistas artistas;
 
     public Principal(ArtistasRepository artistasRepository , MusicasRepository musicasRepository) {
         this.artistasRepository = artistasRepository;
@@ -58,12 +60,18 @@ public class Principal {
                 case 4:
                     buscarMusicaArtista();
                     break;
+                case 5:
+                    pesquisaGptArtista();
+                    break;
+                case 9:
+                    System.out.println("Saindo!");
+                    break;
+                default:
+                    System.out.println("Opcao invalida");
+                    break;
             }
         }
     }
-
-
-
 
     private void cadastrarArtista() {
 
@@ -125,15 +133,32 @@ public class Principal {
             musicasList.forEach(musica -> System.out.println(musica.getNome() + " - " + musica.getArtistas().getNome()));
         }
     }
-    private void listarArtistas(){
-        if (musicasList.isEmpty()){
-            System.out.println("Não há artistas cadastrados!");
+    private void buscarMusicaArtista() {
+        System.out.println("Quer listar as músicas de qual artista?");
+        var nomeArtistas = sc.nextLine().trim();
+        Optional<Artistas> artistaOpt = artistasRepository.findByNomeContainingIgnoreCase(nomeArtistas);
+
+        if (artistaOpt.isPresent()) {
+            Artistas artista = artistaOpt.get();
+            List<Musicas> musicas = musicasRepository.findByArtistas(artista);
+
+            if (musicas.isEmpty()) {
+                System.out.println("Não há músicas disponíveis para esse artista.");
+            } else {
+                System.out.println("Músicas do artista " + artista.getNome() + ":");
+                for (Musicas musica : musicas) {
+                    System.out.println("- " + musica.getNome());
+                }
+            }
         } else {
-            artistasList.forEach(artistas -> System.out.println(artistas.getNome() + " - " + artistas.getMusicas()));
+            System.out.println("Artista não encontrado.");
         }
     }
-    private void buscarMusicaArtista() {
-        listarArtistas();
-    }
+    private void pesquisaGptArtista() {
+        System.out.println("Digite o artista para pesquisar: ");
+        var nomeArtista = sc.nextLine();
+        String descricao = OpenAi.descricao(nomeArtista);
+        System.out.println("Descricao do artista: " + descricao);
 
+    }
 }

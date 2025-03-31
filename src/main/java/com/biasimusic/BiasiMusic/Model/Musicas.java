@@ -11,6 +11,7 @@ public class Musicas {
     private Long id;
     private String nome;
     @ManyToOne
+    @JoinColumn(name = "artistas_id")
     private Artistas artistas;
 
     public Musicas(){}
@@ -36,8 +37,8 @@ public class Musicas {
         return artistas;
     }
 
-    public void setArtistas(Artistas artista) {
-        this.artistas = artista;
+    public void setArtistas(Artistas artistas) {
+        this.artistas = artistas;
     }
 
     @Override

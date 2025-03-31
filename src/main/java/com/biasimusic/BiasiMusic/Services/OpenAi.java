@@ -5,8 +5,8 @@ import com.theokanning.openai.service.OpenAiService;
 
 public class OpenAi {
     public static String descricao(String texto){
-    OpenAiService service = new OpenAiService(System.getenv("OPENAI_APIKEY"));
-
+        String apiKey = "";
+        OpenAiService service = new OpenAiService(apiKey);
 
     CompletionRequest requisicao = CompletionRequest.builder()
             .model("gpt-3.5-turbo-instruct")
